@@ -1,0 +1,35 @@
+name: Build and push docker-multi images
+on:
+  push:
+    branches:
+      - main # check your repo, your default branch might be master!
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build and push client image
+        run: |
+          docker build -t ayule/multi-client ./client && 
+          docker push ayule/multi-client
+
+      - name: Build and push nginx router
+        run: |
+          docker build -t ayule/multi-nginx ./nginx &&
+          docker push ayule/multi-nginx
+
+      - name: Build and push API server
+        run: |
+          docker build -t ayule/multi-server ./server &&
+          docker push ayule/multi-server
+
+      - name: Build and push worker (Fibonacci sequence calculator)
+        run: |
+          docker build -t ayule/multi-worker ./worker &&
+          docker push ayule/multi-worker
